@@ -6,7 +6,7 @@ chromachron clone in python2.7
 inspired by awesome german design and pixies
 @author brian morrow
 '''
-import pygame, sys, random, time, math
+import pygame, sys, random, time, math, pygame.gfxdraw
 from pygame.locals import *
 
 fps = 30
@@ -45,12 +45,12 @@ def main():
     cf = ClockFace(color='color')
     cf.draw()
     while True:
+        checkForQuit()
         clock()
 
 def clock():
     ch = ClockHands()
     ch.draw()
-    checkForQuit()
     pygame.display.update()
     fpsclock.tick(fps)
 
@@ -88,12 +88,9 @@ class ClockFace:
         ''' pieces = [(Surface, None, Rect, start_angle, stop_angle, None)]'''
         pieces = []
         for x in range(12):
-            rect = (self.center[0]-self.radius,self.center[1]-self.radius,
-                    self.radius*2, self.radius*2)
-            start = degToRad(30*x)
-            temp = radToDeg(start)
-            end = degToRad(temp+30)
-            p = (self.surf, None, rect, start, end, 3)
+            start = 30*x
+            end = start+30
+            p = (self.surf, self.center[0], self.center[1], self.radius, start, end, None)
             pieces.append(p)
         return pieces
 
@@ -102,14 +99,13 @@ class ClockFace:
             if bg == 'color':
                 for x in range(12):
                     pieces[x] = list(pieces[x])
-                    pieces[x][1] = colors[x]
+                    pieces[x][6] = colors[x]
             elif bg == 'gray':
                 pass
             return pieces
         self.pieces = _colorize(self.pieces, self.bg)
         for piece in self.pieces:
-            print piece
-            pygame.draw.arc(piece[0], piece[1], piece[2], piece[3], piece[4], piece[5])
+            pygame.gfxdraw.pie(piece[0], piece[1], piece[2], piece[3], piece[4], piece[5], piece[6])
 
 if __name__ == '__main__':
     main()
